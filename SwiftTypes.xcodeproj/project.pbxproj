@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0059A84E1C204F9400EB59BD /* SwiftTypesWatchOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 0059A84D1C204F9400EB59BD /* SwiftTypesWatchOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		0059A8531C20503D00EB59BD /* Either.swift in Sources */ = {isa = PBXBuildFile; fileRef = 710CE6671C15D9FF0059C0AD /* Either.swift */; };
+		0059A8541C20503D00EB59BD /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 710CE6681C15D9FF0059C0AD /* Result.swift */; };
 		710CE6511C15D9D40059C0AD /* SwiftTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 710CE6501C15D9D40059C0AD /* SwiftTypes.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		710CE6581C15D9D40059C0AD /* SwiftTypes.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 710CE64D1C15D9D40059C0AD /* SwiftTypes.framework */; };
 		710CE6691C15D9FF0059C0AD /* Either.swift in Sources */ = {isa = PBXBuildFile; fileRef = 710CE6671C15D9FF0059C0AD /* Either.swift */; };
@@ -26,6 +29,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0059A84B1C204F9400EB59BD /* SwiftTypes.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftTypes.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		0059A84D1C204F9400EB59BD /* SwiftTypesWatchOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftTypesWatchOS.h; sourceTree = "<group>"; };
+		0059A84F1C204F9400EB59BD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		710CE64D1C15D9D40059C0AD /* SwiftTypes.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftTypes.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		710CE6501C15D9D40059C0AD /* SwiftTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftTypes.h; sourceTree = "<group>"; };
 		710CE6521C15D9D40059C0AD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -38,6 +44,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		0059A8471C204F9400EB59BD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		710CE6491C15D9D40059C0AD /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -56,11 +69,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0059A84C1C204F9400EB59BD /* SwiftTypesWatchOS */ = {
+			isa = PBXGroup;
+			children = (
+				0059A84D1C204F9400EB59BD /* SwiftTypesWatchOS.h */,
+				0059A84F1C204F9400EB59BD /* Info.plist */,
+			);
+			path = SwiftTypesWatchOS;
+			sourceTree = "<group>";
+		};
 		710CE6431C15D9D40059C0AD = {
 			isa = PBXGroup;
 			children = (
 				710CE64F1C15D9D40059C0AD /* SwiftTypes */,
 				710CE65B1C15D9D40059C0AD /* SwiftTypesTests */,
+				0059A84C1C204F9400EB59BD /* SwiftTypesWatchOS */,
 				710CE64E1C15D9D40059C0AD /* Products */,
 			);
 			sourceTree = "<group>";
@@ -70,6 +93,7 @@
 			children = (
 				710CE64D1C15D9D40059C0AD /* SwiftTypes.framework */,
 				710CE6571C15D9D40059C0AD /* SwiftTypesTests.xctest */,
+				0059A84B1C204F9400EB59BD /* SwiftTypes.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -98,6 +122,14 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		0059A8481C204F9400EB59BD /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0059A84E1C204F9400EB59BD /* SwiftTypesWatchOS.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		710CE64A1C15D9D40059C0AD /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -109,6 +141,24 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		0059A84A1C204F9400EB59BD /* SwiftTypesWatchOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0059A8521C204F9400EB59BD /* Build configuration list for PBXNativeTarget "SwiftTypesWatchOS" */;
+			buildPhases = (
+				0059A8461C204F9400EB59BD /* Sources */,
+				0059A8471C204F9400EB59BD /* Frameworks */,
+				0059A8481C204F9400EB59BD /* Headers */,
+				0059A8491C204F9400EB59BD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SwiftTypesWatchOS;
+			productName = SwiftTypesWatchOS;
+			productReference = 0059A84B1C204F9400EB59BD /* SwiftTypes.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 		710CE64C1C15D9D40059C0AD /* SwiftTypes */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 710CE6611C15D9D40059C0AD /* Build configuration list for PBXNativeTarget "SwiftTypes" */;
@@ -155,6 +205,9 @@
 				LastUpgradeCheck = 0710;
 				ORGANIZATIONNAME = "Antoine Palazzolo";
 				TargetAttributes = {
+					0059A84A1C204F9400EB59BD = {
+						CreatedOnToolsVersion = 7.2;
+					};
 					710CE64C1C15D9D40059C0AD = {
 						CreatedOnToolsVersion = 7.1.1;
 					};
@@ -177,11 +230,19 @@
 			targets = (
 				710CE64C1C15D9D40059C0AD /* SwiftTypes */,
 				710CE6561C15D9D40059C0AD /* SwiftTypesTests */,
+				0059A84A1C204F9400EB59BD /* SwiftTypesWatchOS */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		0059A8491C204F9400EB59BD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		710CE64B1C15D9D40059C0AD /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -199,6 +260,15 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		0059A8461C204F9400EB59BD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0059A8531C20503D00EB59BD /* Either.swift in Sources */,
+				0059A8541C20503D00EB59BD /* Result.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		710CE6481C15D9D40059C0AD /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -228,6 +298,46 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		0059A8501C204F9400EB59BD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = SwiftTypesWatchOS/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = fr.digischool.SwiftTypesWatchOS;
+				PRODUCT_NAME = SwiftTypes;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 2.1;
+			};
+			name = Debug;
+		};
+		0059A8511C204F9400EB59BD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = SwiftTypesWatchOS/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = fr.digischool.SwiftTypesWatchOS;
+				PRODUCT_NAME = SwiftTypes;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 2.1;
+			};
+			name = Release;
+		};
 		710CE65F1C15D9D40059C0AD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -379,6 +489,14 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		0059A8521C204F9400EB59BD /* Build configuration list for PBXNativeTarget "SwiftTypesWatchOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0059A8501C204F9400EB59BD /* Debug */,
+				0059A8511C204F9400EB59BD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		710CE6471C15D9D40059C0AD /* Build configuration list for PBXProject "SwiftTypes" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
