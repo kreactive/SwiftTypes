@@ -56,4 +56,11 @@ public enum Result<T> {
             return .Failure(error)
         }
     }
+    public func transform<U>(@noescape success success : T throws -> Result<U>, @noescape failure : ErrorType throws -> Result<U>) rethrows -> Result<U> {
+        switch self {
+        case .Success(let value): return try success(value)
+        case .Failure(let error): return try failure(error)
+        }
+    }
+    
 }

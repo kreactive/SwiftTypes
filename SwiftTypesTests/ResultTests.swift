@@ -159,7 +159,45 @@ class ResultTests: XCTestCase {
         }
         
     }
-    
+    func testTransform() {
+        
+        let success = Result(2.0)
+        
+        let transformedSuccess = success.transform(success : { value in
+            Result(Int(value))
+        }, failure : { error in
+            Result(error)
+        })
+        
+        switch transformedSuccess {
+        case .Success(let value):
+            XCTAssertEqual(2, value)
+        case .Failure(let error):
+            XCTFail("should not be a failure \(error)")
+        }
+        
+        
+        let error = NSError(domain: "ResultTest", code: 1, userInfo: nil)
+        let error2 = NSError(domain: "ResultTest", code: 2, userInfo: nil)
+        let failure = Result<Int> {throw error}
+
+        let transformedFailure = failure.transform(success : { value in
+            Result(value)
+        }, failure : { error in
+            Result(error2)
+        })
+        
+        switch transformedFailure {
+        case .Success(_):
+            XCTFail("should be a failure")
+        case .Failure(let errorType):
+            let err = errorType as NSError
+            XCTAssertEqual(error2, err)
+        }
+        
+        
+        
+    }
     func testInit() {
         
         let success = Result<Int> {
