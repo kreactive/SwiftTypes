@@ -36,10 +36,24 @@ public enum Result<T> {
         case .Failure(let error): return Result<U>(error);
         }
     }
+    public func wrappedMap<U>(@noescape transform : T throws -> U) -> Result<U> {
+        do {
+            return try self.map(transform)
+        } catch {
+            return .Failure(error)
+        }
+    }
     public func flatMap<U>(@noescape transform : T throws -> Result<U>) rethrows -> Result<U> {
         switch self {
-        case .Success(let value): return try transform(value);
-        case .Failure(let error): return Result<U>(error);
+        case .Success(let value): return try transform(value)
+        case .Failure(let error): return Result<U>(error)
+        }
+    }
+    public func wrappedFlatMap<U>(@noescape transform : T throws -> Result<U>) -> Result<U> {
+        do {
+            return try self.flatMap(transform)
+        } catch {
+            return .Failure(error)
         }
     }
 }

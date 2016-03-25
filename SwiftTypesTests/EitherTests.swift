@@ -21,15 +21,7 @@ class EitherTests: XCTestCase {
         super.tearDown()
     }
 
-    func testInit() {
-        let left = Either<String,String>.Left("left")
-        
-        switch left {
-        case .Left(let value):
-            XCTAssertEqual(value, "left")
-        case .Right(_):
-            XCTFail("should be left value")
-        }
+    func testInit() {        
         
         let left2 = Either<String,Int>("left")
         
@@ -38,15 +30,6 @@ class EitherTests: XCTestCase {
             XCTAssertEqual(value, "left")
         case .Right(_):
             XCTFail("should be left value")
-        }
-        
-        let right = Either<String,String>.Right("right")
-        
-        switch right {
-        case .Left(_):
-            XCTFail("should be right value")
-        case .Right(let value):
-            XCTAssertEqual(value, "right")
         }
         
         let right2 = Either<Int,String>("right")

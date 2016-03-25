@@ -40,6 +40,26 @@ class ResultTests: XCTestCase {
             XCTAssertEqual(err, error)
         }
     }
+    func testWrappedMap() {
+        let success = Result(2.0)
+        let wrappedSuccess = success.wrappedMap {Int($0)+2}
+        switch wrappedSuccess {
+        case .Success(let v):
+            XCTAssertEqual(v, 4)
+        case .Failure(let errorType):
+            XCTFail("should be a success \(errorType)")
+        }
+        
+        let error = NSError(domain: "ResultTest", code: 1, userInfo: nil)
+        let wrappedFailure = success.wrappedMap {_ in throw error}
+        switch wrappedFailure {
+        case .Success(_):
+            XCTFail("should be a failure")
+        case .Failure(let errorType):
+            let err = errorType as NSError
+            XCTAssertEqual(err, error)
+        }
+    }
 
     func testFlatMap() {
         
@@ -93,6 +113,27 @@ class ResultTests: XCTestCase {
         case .Failure(let errorType):
             let err = errorType as NSError
             XCTAssertEqual(err, error2)
+        }
+    }
+    
+    func testWrappedFlatMap() {
+        let success = Result(2.0)
+        let wrappedSuccess = success.wrappedFlatMap {_ in Result(2)}
+        switch wrappedSuccess {
+        case .Success(let v):
+            XCTAssertEqual(v, 2)
+        case .Failure(let errorType):
+            XCTFail("should be a success \(errorType)")
+        }
+        
+        let error = NSError(domain: "ResultTest", code: 1, userInfo: nil)
+        let wrappedFailure = success.wrappedFlatMap {_ -> Result<Int> in throw error}
+        switch wrappedFailure {
+        case .Success(_):
+            XCTFail("should be a failure")
+        case .Failure(let errorType):
+            let err = errorType as NSError
+            XCTAssertEqual(err, error)
         }
     }
     
