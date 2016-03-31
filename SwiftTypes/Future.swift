@@ -277,7 +277,12 @@ private class FutureDispatch<T> : Future<T> {
         }
     }
 }
-
+private class FutureFinished<T> : Future<T> {
+    init(result : Result<T>) {
+        super.init()
+        self.completionHandler(result)
+    }
+}
 
 
 public extension NSURLSession {
@@ -305,6 +310,12 @@ public extension Future {
     }
     static func async(operationQueue : NSOperationQueue, operation : () throws -> T)  -> Future<T> {
         return FutureDispatch(operationQueue: operationQueue, operation: operation)
+    }
+    static func successful(result : T) -> Future<T> {
+        return FutureFinished(result: Result(result))
+    }
+    static func failed(error : ErrorType) -> Future<T> {
+        return FutureFinished(result: Result(error))
     }
 }
 

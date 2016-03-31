@@ -458,6 +458,24 @@ class FutureTests: XCTestCase {
         }
         self.waitForExpectationsWithTimeout(10.0, handler: nil)
     }
+    func testFinishedFuture()  {
+        let futureOk = Future.successful(2)
+        let expectation = self.expectationWithDescription("testFinishedFuture1")
+        futureOk.success { v in
+            XCTAssertEqual(2, v)
+            expectation.fulfill()
+        }
+        self.waitForExpectationsWithTimeout(0, handler: nil)
+
+        let error = NSError(domain: "", code: 1, userInfo: nil)
+        let futureKO = Future<Int>.failed(error)
+        let expectation2 = self.expectationWithDescription("testFinishedFuture2")
+        futureKO.failure { err in
+            XCTAssertEqual(error, err as NSError)
+            expectation2.fulfill()
+        }
+        self.waitForExpectationsWithTimeout(0, handler: nil)
+    }
     
     
 }
