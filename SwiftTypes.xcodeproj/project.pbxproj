@@ -15,6 +15,8 @@
 		710CE6691C15D9FF0059C0AD /* Either.swift in Sources */ = {isa = PBXBuildFile; fileRef = 710CE6671C15D9FF0059C0AD /* Either.swift */; };
 		710CE66A1C15D9FF0059C0AD /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 710CE6681C15D9FF0059C0AD /* Result.swift */; };
 		710CE66C1C15DBDB0059C0AD /* ResultTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 710CE66B1C15DBDB0059C0AD /* ResultTests.swift */; };
+		710D4AF11CABC55300024F65 /* Future.swift in Sources */ = {isa = PBXBuildFile; fileRef = 710D4AF01CABC55300024F65 /* Future.swift */; };
+		710D4AF31CABC5F500024F65 /* FutureTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 710D4AF21CABC5F500024F65 /* FutureTest.swift */; };
 		71E878DB1C15E60900970AD1 /* EitherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71E878DA1C15E60900970AD1 /* EitherTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -40,6 +42,8 @@
 		710CE6671C15D9FF0059C0AD /* Either.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Either.swift; sourceTree = "<group>"; };
 		710CE6681C15D9FF0059C0AD /* Result.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
 		710CE66B1C15DBDB0059C0AD /* ResultTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResultTests.swift; sourceTree = "<group>"; };
+		710D4AF01CABC55300024F65 /* Future.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Future.swift; sourceTree = "<group>"; };
+		710D4AF21CABC5F500024F65 /* FutureTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FutureTest.swift; sourceTree = "<group>"; };
 		71E878DA1C15E60900970AD1 /* EitherTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EitherTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -103,6 +107,7 @@
 			children = (
 				710CE6671C15D9FF0059C0AD /* Either.swift */,
 				710CE6681C15D9FF0059C0AD /* Result.swift */,
+				710D4AF01CABC55300024F65 /* Future.swift */,
 				710CE6501C15D9D40059C0AD /* SwiftTypes.h */,
 				710CE6521C15D9D40059C0AD /* Info.plist */,
 			);
@@ -113,6 +118,7 @@
 			isa = PBXGroup;
 			children = (
 				710CE65E1C15D9D40059C0AD /* Info.plist */,
+				710D4AF21CABC5F500024F65 /* FutureTest.swift */,
 				710CE66B1C15DBDB0059C0AD /* ResultTests.swift */,
 				71E878DA1C15E60900970AD1 /* EitherTests.swift */,
 			);
@@ -273,6 +279,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				710D4AF11CABC55300024F65 /* Future.swift in Sources */,
 				710CE66A1C15D9FF0059C0AD /* Result.swift in Sources */,
 				710CE6691C15D9FF0059C0AD /* Either.swift in Sources */,
 			);
@@ -283,6 +290,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				71E878DB1C15E60900970AD1 /* EitherTests.swift in Sources */,
+				710D4AF31CABC5F500024F65 /* FutureTest.swift in Sources */,
 				710CE66C1C15DBDB0059C0AD /* ResultTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
