@@ -3,15 +3,6 @@
 //  SwiftTypes
 //
 //  Created by Antoine Palazzolo on 30/03/16.
-//  Copyright © 2016 Antoine Palazzolo. All rights reserved.
-//
-//
-//  Future.swift
-//  testFuture
-//
-//  Created by Antoine Palazzolo on 29/03/16.
-//  Copyright © 2016 Kreactive. All rights reserved.
-//
 
 import Foundation
 
@@ -31,11 +22,10 @@ public protocol FutureType {
     var canceled : Bool {get}
     func cancel()
     func result(handler : Result<ResultType> -> Void)
-    func failure(handler : ErrorType -> Void)
-    func success(handler : ResultType -> Void)
     func map<U>(transform : ResultType throws -> U) -> Future<U>
     func flatMap<U>(transform : ResultType throws -> Future<U>) -> Future<U>
     func get(timeout timeout : NSTimeInterval?) -> Result<ResultType>
+    func holdsMultipleHandlers() -> Bool
 }
 public extension FutureType {
     func map<U>(transform : ResultType throws -> U) -> Future<U> {
@@ -81,6 +71,12 @@ public class Future<T> : FutureType {
         case .InProgress:
             return Result(FutureError.Timeout)
         }
+    }
+    public func holdsMultipleHandlers() -> Bool {
+        self.stateLock.lock()
+        let result = self.resultHandlers.count + self.failureHandlers.count + self.successHandlers.count
+        self.stateLock.unlock()
+        return result > 1
     }
     
     public func cancel() {
@@ -154,14 +150,18 @@ public class Future<T> : FutureType {
             self.successHandlers.append(handler)
         }
     }
-    
+    public func copy() -> Future<T> {
+        return self.map {$0}
+    }
 }
 
 private class MappedFuture<T,U : FutureType>: Future<T> {
     private let future : U
     override func cancel() {
         super.cancel()
-        self.future.cancel()
+        if !self.future.holdsMultipleHandlers() {
+            self.future.cancel()
+        }
     }
     init(initialFuture : U, transform : U.ResultType throws -> T) {
         self.future = initialFuture
@@ -179,10 +179,14 @@ private class FlatMappedFuture<T : FutureType,U : FutureType>: Future<T.ResultTy
     
     override func cancel() {
         super.cancel()
+        if !self.initial.holdsMultipleHandlers() {
+            self.initial.cancel()
+        }
         self.futureLock.lock()
-        defer {self.futureLock.unlock()}
-        self.initial.cancel()
-        self.next?.cancel()
+        if let next = self.next where !next.holdsMultipleHandlers() {
+            next.cancel()
+        }
+        self.futureLock.unlock()
     }
     
     init(initialFuture : U, transform : U.ResultType throws -> T) {
@@ -240,7 +244,9 @@ private class FutureFlattened<T : FutureType,S : SequenceType where S.Generator.
     let group = dispatch_group_create()
     private override func cancel() {
         super.cancel()
-        self.source.forEach {$0.cancel()}
+        self.source.forEach {
+            if !$0.holdsMultipleHandlers() {$0.cancel()}
+        }
     }
     init(source : S) {
         self.source = source

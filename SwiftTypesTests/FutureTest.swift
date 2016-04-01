@@ -3,7 +3,6 @@
 //  SwiftTypes
 //
 //  Created by Antoine Palazzolo on 30/03/16.
-//  Copyright © 2016 Antoine Palazzolo. All rights reserved.
 //
 
 import Foundation
@@ -309,7 +308,6 @@ class FutureTests: XCTestCase {
         XCTAssert(mappedFuture.canceled)
         XCTAssert(future.canceled)
         
-        
         self.waitForExpectationsWithTimeout(0.2, handler: nil)
     }
     
@@ -345,7 +343,7 @@ class FutureTests: XCTestCase {
             XCTAssertEqual($0,4)
             expectation.fulfill()
         }
-        self.waitForExpectationsWithTimeout(0.4, handler: nil)
+        self.waitForExpectationsWithTimeout(1.0, handler: nil)
     }
     
     func testFlatMapCancel() {
@@ -477,6 +475,84 @@ class FutureTests: XCTestCase {
         self.waitForExpectationsWithTimeout(0, handler: nil)
     }
     
+    func testCancelWithMultipleHandlersMap() {
+        let future = Future.async { () -> Float in
+            NSThread.sleepForTimeInterval(0.1)
+            return 2.0
+        }
+        let expectation = self.expectationWithDescription("testCancelWithMultipleHandlersMap1")
+        future.success { _ in
+            expectation.fulfill()
+        }
+        let mapped = future.map { v -> Int in
+            return Int(v)
+        }
+        
+        let expectation2 = self.expectationWithDescription("testCancelWithMultipleHandlersMap2")
+        mapped.failure { err in
+            XCTAssert(FutureUtils.isCancelled(err))
+            expectation2.fulfill()
+        }
+        mapped.cancel()
+        XCTAssert(mapped.canceled)
+        XCTAssert(!future.canceled)
+        self.waitForExpectationsWithTimeout(0.5, handler: nil)
+    }
+    func testCancelWithMultipleHandlersFlatMap() {
+        let future = Future.async { () -> Float in
+            NSThread.sleepForTimeInterval(0.1)
+            return 2.0
+        }
+        let expectation = self.expectationWithDescription("testCancelWithMultipleHandlersFlatMap1")
+        future.success { _ in
+            expectation.fulfill()
+        }
+        let flatMapped = future.flatMap { v -> Future<Int> in
+            Future.async { Int(v) }
+        }
+        
+        let expectation2 = self.expectationWithDescription("testCancelWithMultipleHandlersFlatMap2")
+        flatMapped.failure { err in
+            XCTAssert(FutureUtils.isCancelled(err))
+            expectation2.fulfill()
+        }
+        flatMapped.cancel()
+        XCTAssert(flatMapped.canceled)
+        XCTAssert(!future.canceled)
+        self.waitForExpectationsWithTimeout(0.5, handler: nil)
+    }
+    func testCancelWithMultipleHandlersFlatten() {
+        let futureList = FutureUtils.createFlattenedFuture123()
+        let first = futureList.first!
+        let last = futureList.last!
+        precondition(first !== last)
+        
+        let expectation = self.expectationWithDescription("testCancelWithMultipleHandlersFlatten1")
+        first.success { _ in
+            expectation.fulfill()
+        }
+        let flattened = futureList.flattened
+        
+        let expectation2 = self.expectationWithDescription("testCancelWithMultipleHandlersFlatMap2")
+        flattened.failure { err in
+            XCTAssert(FutureUtils.isCancelled(err))
+            expectation2.fulfill()
+        }
+        flattened.cancel()
+        XCTAssert(flattened.canceled)
+        XCTAssert(!first.canceled)
+        XCTAssert(last.canceled)
+        self.waitForExpectationsWithTimeout(0.5, handler: nil)
+    }
+    
+    func testCopy() {
+        let future = Future.async { () -> Float in
+            NSThread.sleepForTimeInterval(0.1)
+            return 2.0
+        }
+        let copy = future.copy()
+        XCTAssert(future !== copy)
+    }
     
 }
 enum FutureUtils {
