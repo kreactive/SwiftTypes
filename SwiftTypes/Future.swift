@@ -323,5 +323,10 @@ public extension Future {
     static func failed(error : ErrorType) -> Future<T> {
         return FutureFinished(result: Result(error))
     }
+    static func withCompletionHandler(@noescape completionHandler : (Result<T> -> Void) -> Void) -> Future<T> {
+        let result = Future<T>()
+        completionHandler(result.completionHandler)
+        return result
+    }
 }
 

@@ -553,6 +553,30 @@ class FutureTests: XCTestCase {
         let copy = future.copy()
         XCTAssert(future !== copy)
     }
+    func testCompletionHandlerConversion() {
+        let asyncOperation : (completion : Int -> Void) -> Void = { completionHandler in
+            dispatch_async(dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0)) {
+                NSThread.sleepForTimeInterval(0.1)
+                completionHandler(2)
+            }
+        }
+        
+        
+        
+        let future = Future<Int>.withCompletionHandler { completionHandler in
+            asyncOperation {
+                completionHandler(Result($0))
+            }
+        }
+        
+        let expectation = self.expectationWithDescription("testCompletionHandlerConversion")
+        future.success { result in
+            XCTAssertEqual(result,2)
+            expectation.fulfill()
+        }
+        self.waitForExpectationsWithTimeout(10.0, handler: nil)
+        
+    }
     
 }
 enum FutureUtils {
