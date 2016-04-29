@@ -346,7 +346,7 @@ class FutureTests: XCTestCase {
         self.waitForExpectationsWithTimeout(1.0, handler: nil)
     }
     
-    func testFlatMapCancel() {
+    func testFlatMapCancelFirst() {
         let future = Future.async { () -> Float in
             NSThread.sleepForTimeInterval(0.1)
             return 2.0
@@ -368,7 +368,7 @@ class FutureTests: XCTestCase {
    
     
     
-    func testFlatMapCancel2() {
+    func testFlatMapCancel() {
         let future = Future.async { () -> Float in
             NSThread.sleepForTimeInterval(0.1)
             return 2.0
@@ -387,24 +387,31 @@ class FutureTests: XCTestCase {
         }
         self.waitForExpectationsWithTimeout(0.3, handler: nil)
     }
-    func testFlatMapCancel3() {
+    func testFlatMapCancelSecond() {
+        let expectation1 = self.expectationWithDescription("testFlatMapFirst")
         let future = Future.async { () -> Float in
             NSThread.sleepForTimeInterval(0.1)
+            expectation1.fulfill()
             return 2.0
         }
-        let flatFuture = future.flatMap { v -> Future<Int> in
-            NSThread.sleepForTimeInterval(0.1)
-            return Future.async {Int(v)*2}
+        let future2 = Future.async { () -> Int in
+            NSThread.sleepForTimeInterval(0.3)
+            return 2
         }
+        let flatFuture = future.flatMap { v -> Future<Int> in
+            return future2
+        }
+        self.waitForExpectationsWithTimeout(0.5, handler: nil)
         flatFuture.cancel()
-        XCTAssert(future.canceled)
+        XCTAssert(future.canceled == false)
+        XCTAssert(future2.canceled == true)
         XCTAssert(flatFuture.canceled)
         let expectation = self.expectationWithDescription("testFlatMap")
         flatFuture.failure {
             FutureUtils.isCancelled($0)
             expectation.fulfill()
         }
-        self.waitForExpectationsWithTimeout(0.3, handler: nil)
+        self.waitForExpectationsWithTimeout(0.5, handler: nil)
     }
     
     func testURLTask() {
@@ -576,6 +583,76 @@ class FutureTests: XCTestCase {
         }
         self.waitForExpectationsWithTimeout(10.0, handler: nil)
         
+    }
+    
+    func testRecover() {
+        
+        let expectation = self.expectationWithDescription("testRecover")
+        let future = Future<Int>.async {
+            NSThread.sleepForTimeInterval(0.1)
+            return 1
+        }
+        let recovered = future.fallback(2)
+        recovered.success {v in
+            XCTAssertEqual(v, 1)
+            expectation.fulfill()
+        }
+        
+        self.waitForExpectationsWithTimeout(0.3, handler: nil)
+        
+        
+        let expectationFailure = self.expectationWithDescription("testRecoverFailure")
+        let futureFailure = Future<Int>.async {
+            NSThread.sleepForTimeInterval(0.1)
+            throw NSError(domain: "testRecover", code: 1, userInfo: nil)
+        }
+        
+        let recoveredFailure = futureFailure.fallback(2)
+        recoveredFailure.success {v in
+            XCTAssertEqual(v, 2)
+            expectationFailure.fulfill()
+        }
+        self.waitForExpectationsWithTimeout(0.6, handler: nil)
+    }
+    
+    func testRecoverWith() {
+        
+        let expectation = self.expectationWithDescription("testRecover")
+        let future = Future<Int>.async {
+            NSThread.sleepForTimeInterval(0.1)
+            return 1
+        }
+        let recovered = future.recoverWith {_ in
+            return Future<Int>.async {
+                NSThread.sleepForTimeInterval(0.1)
+                return 2
+            }
+        }
+        recovered.success {v in
+            XCTAssertEqual(v, 1)
+            expectation.fulfill()
+        }
+        
+        self.waitForExpectationsWithTimeout(0.3, handler: nil)
+        
+        
+        let expectationFailure = self.expectationWithDescription("testRecoverFailure")
+        let futureFailure = Future<Int>.async {
+            NSThread.sleepForTimeInterval(0.1)
+            throw NSError(domain: "testRecover", code: 1, userInfo: nil)
+        }
+        
+        let recoveredFailure = futureFailure.recoverWith {_ in
+            return Future<Int>.async {
+                NSThread.sleepForTimeInterval(0.1)
+                return 2
+            }
+        }
+        recoveredFailure.success {v in
+            XCTAssertEqual(v, 2)
+            expectationFailure.fulfill()
+        }
+        self.waitForExpectationsWithTimeout(0.6, handler: nil)
     }
     
 }

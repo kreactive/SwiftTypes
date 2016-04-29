@@ -26,13 +26,25 @@ public protocol FutureType {
     func flatMap<U>(transform : ResultType throws -> Future<U>) -> Future<U>
     func get(timeout timeout : NSTimeInterval?) -> Result<ResultType>
     func holdsMultipleHandlers() -> Bool
+    func recover(recover : (ErrorType) throws -> ResultType) -> Future<ResultType>
+    func recoverWith(recover : (ErrorType) throws -> Future<ResultType>) -> Future<ResultType>
+    func fallback(to : ResultType) -> Future<ResultType>
 }
 public extension FutureType {
     func map<U>(transform : ResultType throws -> U) -> Future<U> {
-        return MappedFuture(initialFuture: self, transform: transform)
+        return TransformedFuture(initialFuture: self, map : transform)
     }
-    func flatMap<U : FutureType>(transform : ResultType throws -> U) -> Future<U.ResultType> {
-        return FlatMappedFuture(initialFuture: self, transform: transform)
+    func flatMap<U>(transform : ResultType throws -> Future<U>) -> Future<U> {
+        return FlatMappedFuture(initialFuture: self, map: transform)
+    }
+    func fallback(to : ResultType) -> Future<ResultType> {
+        return self.recover {_ in to}
+    }
+    func recover(recover : (ErrorType) throws -> ResultType) -> Future<ResultType> {
+        return TransformedFuture(initialFuture: self, recover: recover)
+    }
+    func recoverWith(recover : (ErrorType) throws -> Future<ResultType>) -> Future<ResultType> {
+        return FlatMappedFuture(initialFuture: self, recover: recover)
     }
 }
 
@@ -155,7 +167,7 @@ public class Future<T> : FutureType {
     }
 }
 
-private class MappedFuture<T,U : FutureType>: Future<T> {
+private class TransformedFuture<T,U : FutureType>: Future<T> {
     private let future : U
     override func cancel() {
         super.cancel()
@@ -163,48 +175,71 @@ private class MappedFuture<T,U : FutureType>: Future<T> {
             self.future.cancel()
         }
     }
-    init(initialFuture : U, transform : U.ResultType throws -> T) {
+    init(initialFuture : U, transform : Result<U.ResultType> -> Result<T>) {
         self.future = initialFuture
         super.init()
         self.future.result {
-            self.completionHandler($0.wrappedMap(transform))
+            let transformed = transform($0)
+            self.completionHandler(transformed)
+        }
+    }
+    convenience init(initialFuture : U, map : U.ResultType throws -> T) {
+        self.init(initialFuture : initialFuture) { (result : Result<U.ResultType>) in
+            return result.wrappedMap(map)
         }
     }
 }
-private class FlatMappedFuture<T : FutureType,U : FutureType>: Future<T.ResultType> {
-    private let initial : U
-    private var next : T?
+extension TransformedFuture where T == U.ResultType {
+    convenience init(initialFuture : U, recover : ErrorType throws -> T) {
+        self.init(initialFuture : initialFuture) { (result : Result<U.ResultType>) in
+            return result.wrappedRecover(recover)
+        }
+    }
+}
+
+private class FlatMappedFuture<F : FutureType, T>: Future<T> {
+    private let future : Future<Future<T>>
     
+    private var next : Future<T>?
     private let futureLock = NSLock()
     
     override func cancel() {
         super.cancel()
-        if !self.initial.holdsMultipleHandlers() {
-            self.initial.cancel()
+        if !self.future.holdsMultipleHandlers() {
+            self.future.cancel()
         }
-        self.futureLock.lock()
-        if let next = self.next where !next.holdsMultipleHandlers() {
-            next.cancel()
+        futureLock.lock()
+        if let nextFuture = next where !nextFuture.holdsMultipleHandlers() {
+            nextFuture.cancel()
         }
-        self.futureLock.unlock()
+        futureLock.unlock()
     }
-    
-    init(initialFuture : U, transform : U.ResultType throws -> T) {
-        self.initial = initialFuture
+    init(initialFuture : F, transform : Result<F.ResultType> -> Result<Future<T>>) {
+        self.future = TransformedFuture(initialFuture: initialFuture, transform: transform)
         super.init()
-        self.initial.result { result in           
-            let nextR = result.wrappedMap(transform)
-            switch nextR {
+        self.future.result { nextFutureResult in
+            switch nextFutureResult {
+            case .Success(let nextFuture):
+                self.futureLock.lock()
+                self.next = nextFuture
+                self.futureLock.unlock()
+                nextFuture.result {self.completionHandler($0)}
             case .Failure(let error):
                 self.completionHandler(Result(error))
-            case .Success(let value):
-                self.futureLock.lock()
-                self.next = value
-                self.futureLock.unlock()
-                value.result {
-                    self.completionHandler($0)
-                }
             }
+        }
+    }
+    convenience init(initialFuture : F, map : F.ResultType throws -> Future<T>) {
+        self.init(initialFuture : initialFuture) { (result : Result<F.ResultType>) in
+            return result.wrappedMap(map)
+        }
+    }
+}
+
+extension FlatMappedFuture where F.ResultType == T {
+    convenience init(initialFuture : F, recover : ErrorType throws -> Future<T>) {
+        self.init(initialFuture : initialFuture) { (result : Result<F.ResultType>) in
+            return result.wrappedFold(success: Future.successful, failure: recover)
         }
     }
 }
