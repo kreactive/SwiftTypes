@@ -62,5 +62,33 @@ public enum Result<T> {
         case .Failure(let error): return try failure(error)
         }
     }
+    public func fold<U>(@noescape success success : T throws -> U, @noescape failure : ErrorType throws -> U) rethrows -> Result<U> {
+        switch self {
+        case .Success(let value): return try Result<U>.Success(success(value))
+        case .Failure(let error): return try Result<U>.Success(failure(error))
+        }
+    }
+    public func wrappedFold<U>(@noescape success success : T throws -> U, @noescape failure : ErrorType throws -> U) -> Result<U> {
+        switch self {
+        case .Success(let value): return Result<U> {try success(value)}
+        case .Failure(let error): return Result<U> {try failure(error)}
+        }
+    }
+    public func recover(@noescape transform : ErrorType throws -> T) rethrows -> Result<T> {
+        switch self {
+        case .Success(_):
+            return self
+        case .Failure(let error):
+            return try Result(transform(error))
+        }
+    }
+    public func wrappedRecover(@noescape transform : ErrorType throws -> T) -> Result<T> {
+        switch self {
+        case .Success(_):
+            return self
+        case .Failure(let error):
+            return Result {try transform(error) }
+        }
+    }
     
 }

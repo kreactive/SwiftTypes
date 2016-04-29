@@ -225,4 +225,57 @@ class ResultTests: XCTestCase {
         }
         
     }
+    func testFold() {
+        let success = Result<Double> {
+            return 2.0
+        }
+        let foldedS = success.fold(success: {v in Int(v)}, failure: {_ in 4})
+        XCTAssert(try! foldedS.get() == 2)
+        
+        let error = Result<Double> {
+            throw NSError(domain: "testFold", code: 1, userInfo: nil)
+        }
+        let foldedE = error.fold(success: {v in Int(v)}, failure: {_ in 4})
+        XCTAssert(try! foldedE.get() == 4)
+        
+        
+        let wsuccess = Result<Double> {
+            return 2.0
+        }
+        let wfoldedS = wsuccess.wrappedFold(success: {v in Int(v)}, failure: {_ in 4})
+        XCTAssert(try! wfoldedS.get() == 2)
+        
+        let werror = Result<Double> {
+            throw NSError(domain: "testFold", code: 1, userInfo: nil)
+        }
+        let wfoldedE = werror.wrappedFold(success: {v in Int(v)}, failure: {_ in 4})
+        XCTAssert(try! wfoldedE.get() == 4)
+    }
+    func testRecover() {
+        let success = Result<Double> {
+            return 2.0
+        }
+        let recoveredS = success.recover {_ in 4}
+        XCTAssert(try! recoveredS.get() == 2)
+        
+        let error = Result<Double> {
+            throw NSError(domain: "testFold", code: 1, userInfo: nil)
+        }
+        let recoveredE = error.recover {_ in 4}
+        XCTAssert(try! recoveredE.get() == 4)
+        
+        
+        let wsuccess = Result<Double> {
+            return 2.0
+        }
+        let wrecoveredS = wsuccess.wrappedRecover {_ in 4}
+        XCTAssert(try! wrecoveredS.get() == 2)
+        
+        let werror = Result<Double> {
+            throw NSError(domain: "testFold", code: 1, userInfo: nil)
+        }
+        let wrecoveredE = werror.wrappedRecover {_ in 4}
+        XCTAssert(try! wrecoveredE.get() == 4)
+        
+    }
 }
