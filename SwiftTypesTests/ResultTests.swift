@@ -278,4 +278,22 @@ class ResultTests: XCTestCase {
         XCTAssert(try! wrecoveredE.get() == 4)
         
     }
+    func testToOptional() {
+        let success = Result<Int> {
+            return 2
+        }
+        let optSuccess = Optional(fromResult : success)
+        if let v = optSuccess {
+            XCTAssertEqual(v,2)
+        } else {
+            XCTFail()
+        }
+        
+        let failure = Result<Int> {
+            throw NSError(domain: "ResultTest", code: 1, userInfo: nil)
+        }
+        let optFailure = Optional(fromResult : failure)
+        XCTAssertEqual(optFailure, nil)
+
+    }
 }

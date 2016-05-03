@@ -92,3 +92,14 @@ public enum Result<T> {
     }
     
 }
+
+public extension Optional {
+    public init(fromResult result : Result<Wrapped>) {
+        switch result {
+        case .Success(let v):
+            self = .Some(v)
+        case .Failure(_):
+            self = .None
+        }
+    }
+}
