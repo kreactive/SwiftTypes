@@ -654,7 +654,51 @@ class FutureTests: XCTestCase {
         }
         self.waitForExpectationsWithTimeout(0.6, handler: nil)
     }
-    
+    func testDispatched() {
+        let executionQueue = NSOperationQueue()
+        let dispatchQueue = NSOperationQueue()
+        
+        let future = Future<Int>.async(executionQueue) {
+            XCTAssert(executionQueue === NSOperationQueue.currentQueue())
+            NSThread.sleepForTimeInterval(0.1)
+            return 1
+        }.dispatchedOnQueue(dispatchQueue)
+        
+        let expectation = self.expectationWithDescription("testDispatched")
+        future.result { _ in
+            XCTAssert(dispatchQueue === NSOperationQueue.currentQueue())
+            expectation.fulfill()
+        }
+        let expectation2 = self.expectationWithDescription("testDispatched2")
+        future.success { _ in
+            XCTAssert(dispatchQueue === NSOperationQueue.currentQueue())
+            expectation2.fulfill()
+        }
+        
+        self.waitForExpectationsWithTimeout(0.4, handler: nil)
+    }
+    func testDispatchedQueue() {
+        let executionQueue = dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0)
+        
+        let future = Future<Int>.async(executionQueue) {
+            XCTAssert(NSThread.currentThread() !== NSThread.mainThread())
+            NSThread.sleepForTimeInterval(0.1)
+            throw NSError(domain: "", code: 0, userInfo: nil)
+        }.dispatchedOnMain()
+        
+        let expectation = self.expectationWithDescription("testDispatched")
+        future.result { _ in
+            XCTAssert(NSThread.currentThread() === NSThread.mainThread())
+            expectation.fulfill()
+        }
+        let expectation2 = self.expectationWithDescription("testDispatched2")
+        future.failure { _ in
+            XCTAssert(NSThread.currentThread() === NSThread.mainThread())
+            expectation2.fulfill()
+        }
+        
+        self.waitForExpectationsWithTimeout(0.4, handler: nil)
+    }
 }
 enum FutureUtils {
     static func checkHTTPBinGetWithParams(result :Result<(NSURLResponse,NSData)>,params :[String : [String]]) -> (Bool,String?) {

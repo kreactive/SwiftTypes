@@ -29,6 +29,9 @@ public protocol FutureType {
     func recover(recover : (ErrorType) throws -> ResultType) -> Future<ResultType>
     func recoverWith(recover : (ErrorType) throws -> Future<ResultType>) -> Future<ResultType>
     func fallback(to : ResultType) -> Future<ResultType>
+    func dispatchedOnQueue(queue : dispatch_queue_t) -> Future<ResultType>
+    func dispatchedOnQueue(queue : NSOperationQueue) -> Future<ResultType>
+
 }
 public extension FutureType {
     func map<U>(transform : ResultType throws -> U) -> Future<U> {
@@ -45,6 +48,15 @@ public extension FutureType {
     }
     func recoverWith(recover : (ErrorType) throws -> Future<ResultType>) -> Future<ResultType> {
         return FlatMappedFuture(initialFuture: self, recover: recover)
+    }
+    func dispatchedOnQueue(queue : dispatch_queue_t) -> Future<ResultType> {
+        return FutureDispatchedOnQueue(initial: self, dispatchQueue: queue)
+    }
+    func dispatchedOnQueue(queue : NSOperationQueue) -> Future<ResultType> {
+        return FutureDispatchedOnQueue(initial: self, operationQueue: queue)
+    }
+    func dispatchedOnMain() -> Future<ResultType> {
+        return self.dispatchedOnQueue(dispatch_get_main_queue())
     }
 }
 
@@ -322,6 +334,26 @@ private class FutureFinished<T> : Future<T> {
     init(result : Result<T>) {
         super.init()
         self.completionHandler(result)
+    }
+}
+
+
+private class FutureDispatchedOnQueue<T : FutureType> : Future<T.ResultType> {
+    init(initial : T, dispatchQueue: dispatch_queue_t) {
+        super.init()
+        initial.result { result in
+            dispatch_async(dispatchQueue) {
+                self.completionHandler(result)
+            }
+        }
+    }
+    init(initial : T, operationQueue: NSOperationQueue) {
+        super.init()
+        initial.result { result in
+            operationQueue.addOperationWithBlock {
+                self.completionHandler(result)
+            }
+        }
     }
 }
 
