@@ -699,6 +699,44 @@ class FutureTests: XCTestCase {
         
         self.waitForExpectationsWithTimeout(0.4, handler: nil)
     }
+    func testRecoveredCanceledFutureBehavior() {
+        
+        let expectation = self.expectationWithDescription("testRecoveredCanceledFutureBehavior")
+        let future = Future<Int>.async {
+            NSThread.sleepForTimeInterval(0.1)
+            return 1
+        }
+        let recovered = future.fallback(2)
+        recovered.cancel()
+        recovered.failure {e in
+            if case FutureError.Cancelled = e {} else {
+                XCTFail("cancelled future must not fallback")
+            }
+            expectation.fulfill()
+        }
+        self.waitForExpectationsWithTimeout(0.3, handler: nil)
+    }
+    func testRecoveredWith_CanceledFutureBehavior() {
+        let expectation = self.expectationWithDescription("testRecoveredCanceledFutureBehavior")
+        let future = Future<Int>.async {
+            NSThread.sleepForTimeInterval(0.1)
+            return 1
+        }
+        let recovered = future.recoverWith {_ in 
+            return Future<Int>.async {
+                NSThread.sleepForTimeInterval(0.1)
+                return 1
+            }
+        }
+        recovered.cancel()
+        recovered.failure {e in
+            if case FutureError.Cancelled = e {} else {
+                XCTFail("cancelled future must not fallback")
+            }
+            expectation.fulfill()
+        }
+        self.waitForExpectationsWithTimeout(0.3, handler: nil)
+    }
 }
 enum FutureUtils {
     static func checkHTTPBinGetWithParams(result :Result<(NSURLResponse,NSData)>,params :[String : [String]]) -> (Bool,String?) {
