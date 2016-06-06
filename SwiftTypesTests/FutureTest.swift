@@ -662,7 +662,7 @@ class FutureTests: XCTestCase {
             XCTAssert(executionQueue === NSOperationQueue.currentQueue())
             NSThread.sleepForTimeInterval(0.1)
             return 1
-        }.dispatchedOnQueue(dispatchQueue)
+        }.dispatched(onQueue : dispatchQueue)
         
         let expectation = self.expectationWithDescription("testDispatched")
         future.result { _ in
@@ -737,6 +737,32 @@ class FutureTests: XCTestCase {
         }
         self.waitForExpectationsWithTimeout(0.3, handler: nil)
     }
+    
+    func testDelayedFuture() {
+        let expectation = self.expectationWithDescription("testDelayedFuture")
+        let future = Future.successful(3).dispatched(afterDelay : 1.0, onQueue : dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0))
+        let startDate = NSDate()
+        future.result { _ in
+            let delay = -startDate.timeIntervalSinceNow
+            XCTAssertEqualWithAccuracy(delay, 1.0, accuracy: 0.1)
+            expectation.fulfill()
+        }
+        
+        self.waitForExpectationsWithTimeout(2, handler: nil)
+    }
+    func testDelayedFutureCanceled() {
+        let expectation = self.expectationWithDescription("testDelayedFutureCanceled")
+        let future = Future.successful(3).dispatched(afterDelay : 1.0, onQueue : dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0))
+        let startDate = NSDate()
+        future.result { _ in
+            let delay = -startDate.timeIntervalSinceNow
+            XCTAssertEqualWithAccuracy(delay, 0.0, accuracy: 0.1)
+            expectation.fulfill()
+        }
+        future.cancel()
+        self.waitForExpectationsWithTimeout(2, handler: nil)
+    }
+    
 }
 enum FutureUtils {
     static func checkHTTPBinGetWithParams(result :Result<(NSURLResponse,NSData)>,params :[String : [String]]) -> (Bool,String?) {

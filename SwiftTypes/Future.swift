@@ -29,9 +29,9 @@ public protocol FutureType {
     func recover(recover : (ErrorType) throws -> ResultType) -> Future<ResultType>
     func recoverWith(recover : (ErrorType) throws -> Future<ResultType>) -> Future<ResultType>
     func fallback(to : ResultType) -> Future<ResultType>
-    func dispatchedOnQueue(queue : dispatch_queue_t) -> Future<ResultType>
-    func dispatchedOnQueue(queue : NSOperationQueue) -> Future<ResultType>
-
+    func dispatched(onQueue queue : dispatch_queue_t) -> Future<ResultType>
+    func dispatched(onQueue queue : NSOperationQueue) -> Future<ResultType>
+    func dispatched(afterDelay delay: NSTimeInterval, onQueue queue: dispatch_queue_t) -> Future<ResultType>
 }
 public extension FutureType {
     func map<U>(transform : ResultType throws -> U) -> Future<U> {
@@ -49,14 +49,17 @@ public extension FutureType {
     func recoverWith(recover : (ErrorType) throws -> Future<ResultType>) -> Future<ResultType> {
         return FlatMappedFuture(initialFuture: self, recover: recover)
     }
-    func dispatchedOnQueue(queue : dispatch_queue_t) -> Future<ResultType> {
+    func dispatched(onQueue queue : dispatch_queue_t) -> Future<ResultType> {
         return FutureDispatchedOnQueue(initial: self, dispatchQueue: queue)
     }
-    func dispatchedOnQueue(queue : NSOperationQueue) -> Future<ResultType> {
+    func dispatched(onQueue queue : NSOperationQueue) -> Future<ResultType> {
         return FutureDispatchedOnQueue(initial: self, operationQueue: queue)
     }
     func dispatchedOnMain() -> Future<ResultType> {
-        return self.dispatchedOnQueue(dispatch_get_main_queue())
+        return self.dispatched(onQueue : dispatch_get_main_queue())
+    }
+    func dispatched(afterDelay delay: NSTimeInterval, onQueue queue: dispatch_queue_t) -> Future<ResultType> {
+        return DelayedFuture(future: self, delay: delay, dispatchQueue: queue)
     }
 }
 
@@ -352,6 +355,18 @@ private class FutureDispatchedOnQueue<T : FutureType> : Future<T.ResultType> {
         initial.result { result in
             operationQueue.addOperationWithBlock {
                 self.completionHandler(result)
+            }
+        }
+    }
+}
+
+private class DelayedFuture<T : FutureType> : Future<T.ResultType> {
+    init(future : T, delay : NSTimeInterval , dispatchQueue: dispatch_queue_t) {
+        super.init()
+        future.result { value in
+            let delay = dispatch_time(DISPATCH_TIME_NOW,Int64(delay * Double(NSEC_PER_SEC)))
+            dispatch_after(delay, dispatchQueue) {
+                self.completionHandler(value)
             }
         }
     }
