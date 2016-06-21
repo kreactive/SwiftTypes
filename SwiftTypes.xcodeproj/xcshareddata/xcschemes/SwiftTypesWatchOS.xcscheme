@@ -20,20 +20,6 @@
                ReferencedContainer = "container:SwiftTypes.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "710CE6561C15D9D40059C0AD"
-               BuildableName = "SwiftTypesTests.xctest"
-               BlueprintName = "SwiftTypesTests"
-               ReferencedContainer = "container:SwiftTypes.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -42,16 +28,6 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "710CE6561C15D9D40059C0AD"
-               BuildableName = "SwiftTypesTests.xctest"
-               BlueprintName = "SwiftTypesTests"
-               ReferencedContainer = "container:SwiftTypes.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
