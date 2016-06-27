@@ -84,8 +84,10 @@ public class Future<T> : FutureType {
     public func get(timeout timeout : NSTimeInterval? = nil) -> Result<T> {
         let semaphore = dispatch_semaphore_create(0)
         self.result { _ in dispatch_semaphore_signal(semaphore)}
-        let timeout = timeout.map(UInt64.init) ?? DISPATCH_TIME_FOREVER
-        dispatch_semaphore_wait(semaphore, timeout)
+        let timeout = timeout.map {
+            dispatch_time(DISPATCH_TIME_NOW, Int64(Double(NSEC_PER_SEC)*$0))
+        }
+        dispatch_semaphore_wait(semaphore, timeout ?? DISPATCH_TIME_FOREVER)
         
         self.stateLock.lock()
         defer {self.stateLock.unlock()}

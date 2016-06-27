@@ -36,14 +36,16 @@ class FutureTests: XCTestCase {
     }
     func testGet() {
         
-        let future = Future.async {2}
-        XCTAssertEqual(2, try! future.get().get())
-        
-        let future2 = Future.async { () -> Int in
+        let future = Future.async { () -> Int in
             NSThread.sleepForTimeInterval(0.2)
             return 2
         }
-        XCTAssertEqual(2, try! future2.get().get())
+        switch future.get(timeout: 10.0) {
+        case .Success(let result):
+            XCTAssertEqual(result, 2)
+        case .Failure(let error):
+            XCTFail("failed with error \(error)")
+        }
         
         let futureCancelled = Future.async { () -> Int in
             NSThread.sleepForTimeInterval(0.2)
@@ -68,6 +70,32 @@ class FutureTests: XCTestCase {
         case .Failure(let error):
             XCTAssert(FutureUtils.isTimeout(error))
         }
+    }
+    func testGetFailed() {
+        let error = NSError(domain: "testGetFailed", code: 1, userInfo: nil)
+        let future = Future.async { () -> Int in
+            NSThread.sleepForTimeInterval(0.3)
+            throw error
+        }
+        switch future.get(timeout: 10) {
+        case .Failure(let err):
+            XCTAssertTrue((err as NSError).domain == error.domain, "should be throwed error, is \(err)")
+        case .Success(_):
+            XCTFail("should be an error")
+        }
+    }
+    func testGetInifinite() {
+        let future = Future.async { () -> Int in
+            NSThread.sleepForTimeInterval(0.3)
+            return 2
+        }
+        switch future.get() {
+        case .Failure(let err):
+            XCTFail("failed with error \(err)")
+        case .Success(let result):
+            XCTAssertEqual(2, result)
+        }
+        
     }
     func testFutureHandlers() {
         let t_error = NSError(domain: "errrr", code: 12, userInfo: nil)
