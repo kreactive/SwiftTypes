@@ -6,7 +6,7 @@
 //  Copyright © 2015 Antoine Palazzolo. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
 //! Project version number for SwiftTypes.
 FOUNDATION_EXPORT double SwiftTypesVersionNumber;
