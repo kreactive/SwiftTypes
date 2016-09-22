@@ -22,9 +22,9 @@ class ResultTests: XCTestCase {
         let mapSuccess = Result(2).map {String($0)}
         
         switch mapSuccess {
-        case .Success(let value):
+        case .success(let value):
             XCTAssertEqual("2", value)
-        case .Failure(let error):
+        case .failure(let error):
             XCTFail("should not be a failure \(error)")
         }
         
@@ -33,9 +33,9 @@ class ResultTests: XCTestCase {
         let mapFailure = Result<Int>(error).map {String($0)}
         
         switch mapFailure {
-        case .Success(let value):
+        case .success(let value):
             XCTFail("should be a failure \(value)")
-        case .Failure(let errorType):
+        case .failure(let errorType):
             let err = errorType as NSError
             XCTAssertEqual(err, error)
         }
@@ -44,18 +44,18 @@ class ResultTests: XCTestCase {
         let success = Result(2.0)
         let wrappedSuccess = success.wrappedMap {Int($0)+2}
         switch wrappedSuccess {
-        case .Success(let v):
+        case .success(let v):
             XCTAssertEqual(v, 4)
-        case .Failure(let errorType):
+        case .failure(let errorType):
             XCTFail("should be a success \(errorType)")
         }
         
         let error = NSError(domain: "ResultTest", code: 1, userInfo: nil)
         let wrappedFailure = success.wrappedMap {_ in throw error}
         switch wrappedFailure {
-        case .Success(_):
+        case .success(_):
             XCTFail("should be a failure")
-        case .Failure(let errorType):
+        case .failure(let errorType):
             let err = errorType as NSError
             XCTAssertEqual(err, error)
         }
@@ -74,9 +74,9 @@ class ResultTests: XCTestCase {
         }
         
         switch flatMapSuccess {
-        case .Success(let value):
+        case .success(let value):
             XCTAssertEqual(2, value)
-        case .Failure(let error):
+        case .failure(let error):
             XCTFail("should not be a failure \(error)")
         }
         
@@ -91,9 +91,9 @@ class ResultTests: XCTestCase {
         }
         
         switch flatMapFailure {
-        case .Success(let value):
+        case .success(let value):
             XCTFail("should be a failure \(value)")
-        case .Failure(let errorType):
+        case .failure(let errorType):
             let err = errorType as NSError
             XCTAssertEqual(err, error)
         }
@@ -108,9 +108,9 @@ class ResultTests: XCTestCase {
         }
         
         switch flatMapFailure2 {
-        case .Success(let value):
+        case .success(let value):
             XCTFail("should be a failure \(value)")
-        case .Failure(let errorType):
+        case .failure(let errorType):
             let err = errorType as NSError
             XCTAssertEqual(err, error2)
         }
@@ -120,18 +120,18 @@ class ResultTests: XCTestCase {
         let success = Result(2.0)
         let wrappedSuccess = success.wrappedFlatMap {_ in Result(2)}
         switch wrappedSuccess {
-        case .Success(let v):
+        case .success(let v):
             XCTAssertEqual(v, 2)
-        case .Failure(let errorType):
+        case .failure(let errorType):
             XCTFail("should be a success \(errorType)")
         }
         
         let error = NSError(domain: "ResultTest", code: 1, userInfo: nil)
         let wrappedFailure = success.wrappedFlatMap {_ -> Result<Int> in throw error}
         switch wrappedFailure {
-        case .Success(_):
+        case .success(_):
             XCTFail("should be a failure")
-        case .Failure(let errorType):
+        case .failure(let errorType):
             let err = errorType as NSError
             XCTAssertEqual(err, error)
         }
@@ -170,9 +170,9 @@ class ResultTests: XCTestCase {
         })
         
         switch transformedSuccess {
-        case .Success(let value):
+        case .success(let value):
             XCTAssertEqual(2, value)
-        case .Failure(let error):
+        case .failure(let error):
             XCTFail("should not be a failure \(error)")
         }
         
@@ -188,9 +188,9 @@ class ResultTests: XCTestCase {
         })
         
         switch transformedFailure {
-        case .Success(_):
+        case .success(_):
             XCTFail("should be a failure")
-        case .Failure(let errorType):
+        case .failure(let errorType):
             let err = errorType as NSError
             XCTAssertEqual(error2, err)
         }
@@ -205,9 +205,9 @@ class ResultTests: XCTestCase {
         }
         
         switch success {
-        case .Success(let value):
+        case .success(let value):
             XCTAssertEqual(2, value)
-        case .Failure(let error):
+        case .failure(let error):
             XCTFail("should not be a failure \(error)")
         }
         
@@ -217,38 +217,38 @@ class ResultTests: XCTestCase {
         }
         
         switch failure {
-        case .Success(let value):
+        case .success(let value):
             XCTFail("should be a failure \(value)")
-        case .Failure(let errorType):
+        case .failure(let errorType):
             let err = errorType as NSError
             XCTAssertEqual(err, error)
         }
         
     }
-    func testFold() {
+    func testReduce() {
         let success = Result<Double> {
             return 2.0
         }
-        let foldedS = success.fold(success: {v in Int(v)}, failure: {_ in 4})
-        XCTAssert(try! foldedS.get() == 2)
+        let foldedS = success.reduce(success: {v in Int(v)}, failure: {_ in 4})
+        XCTAssert(foldedS == 2)
         
         let error = Result<Double> {
             throw NSError(domain: "testFold", code: 1, userInfo: nil)
         }
-        let foldedE = error.fold(success: {v in Int(v)}, failure: {_ in 4})
-        XCTAssert(try! foldedE.get() == 4)
+        let foldedE = error.reduce(success: {v in Int(v)}, failure: {_ in 4})
+        XCTAssert(foldedE == 4)
         
         
         let wsuccess = Result<Double> {
             return 2.0
         }
-        let wfoldedS = wsuccess.wrappedFold(success: {v in Int(v)}, failure: {_ in 4})
+        let wfoldedS = wsuccess.wrappedReduce(success: {v in Int(v)}, failure: {_ in 4})
         XCTAssert(try! wfoldedS.get() == 2)
         
         let werror = Result<Double> {
             throw NSError(domain: "testFold", code: 1, userInfo: nil)
         }
-        let wfoldedE = werror.wrappedFold(success: {v in Int(v)}, failure: {_ in 4})
+        let wfoldedE = werror.wrappedReduce(success: {v in Int(v)}, failure: {_ in 4})
         XCTAssert(try! wfoldedE.get() == 4)
     }
     func testRecover() {
@@ -256,13 +256,13 @@ class ResultTests: XCTestCase {
             return 2.0
         }
         let recoveredS = success.recover {_ in 4}
-        XCTAssert(try! recoveredS.get() == 2)
+        XCTAssert(recoveredS == 2)
         
         let error = Result<Double> {
             throw NSError(domain: "testFold", code: 1, userInfo: nil)
         }
         let recoveredE = error.recover {_ in 4}
-        XCTAssert(try! recoveredE.get() == 4)
+        XCTAssert(recoveredE == 4)
         
         
         let wsuccess = Result<Double> {
