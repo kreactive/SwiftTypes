@@ -8,16 +8,16 @@ import Foundation
 
 public enum Result<T> {
     
-    case Success(T)
-    case Failure(ErrorType)
+    case success(T)
+    case failure(Error)
     
     public init(_ value: T) {
-        self = .Success(value)
+        self = .success(value)
     }
-    public init(_ value : ErrorType) {
-        self = .Failure(value)
+    public init(_ value : Error) {
+        self = .failure(value)
     }
-    public init(@noescape _ value : () throws -> T) {
+    public init(_ value : () throws -> T) {
         do {
             self = try Result<T>(value())
         } catch {
@@ -26,67 +26,67 @@ public enum Result<T> {
     }
     public func get() throws -> T {
         switch self {
-        case .Success(let value): return value;
-        case .Failure(let error): throw error;
+        case .success(let value): return value;
+        case .failure(let error): throw error;
         }
     }
-    public func map<U>(@noescape transform : T throws -> U) rethrows -> Result<U> {
+    public func map<U>(_ transform : (T) throws -> U) rethrows -> Result<U> {
         switch self {
-        case .Success(let value): return try Result<U>(transform(value));
-        case .Failure(let error): return Result<U>(error);
+        case .success(let value): return try Result<U>(transform(value));
+        case .failure(let error): return Result<U>(error);
         }
     }
-    public func wrappedMap<U>(@noescape transform : T throws -> U) -> Result<U> {
+    public func wrappedMap<U>(_ transform : (T) throws -> U) -> Result<U> {
         do {
             return try self.map(transform)
         } catch {
-            return .Failure(error)
+            return .failure(error)
         }
     }
-    public func flatMap<U>(@noescape transform : T throws -> Result<U>) rethrows -> Result<U> {
+    public func flatMap<U>(_ transform : (T) throws -> Result<U>) rethrows -> Result<U> {
         switch self {
-        case .Success(let value): return try transform(value)
-        case .Failure(let error): return Result<U>(error)
+        case .success(let value): return try transform(value)
+        case .failure(let error): return Result<U>(error)
         }
     }
-    public func wrappedFlatMap<U>(@noescape transform : T throws -> Result<U>) -> Result<U> {
+    public func wrappedFlatMap<U>(_ transform : (T) throws -> Result<U>) -> Result<U> {
         do {
             return try self.flatMap(transform)
         } catch {
-            return .Failure(error)
+            return .failure(error)
         }
     }
-    public func transform<U>(@noescape success success : T throws -> Result<U>, @noescape failure : ErrorType throws -> Result<U>) rethrows -> Result<U> {
+    public func transform<U>(success : (T) throws -> Result<U>, failure : (Error) throws -> Result<U>) rethrows -> Result<U> {
         switch self {
-        case .Success(let value): return try success(value)
-        case .Failure(let error): return try failure(error)
+        case .success(let value): return try success(value)
+        case .failure(let error): return try failure(error)
         }
     }
-    public func fold<U>(@noescape success success : T throws -> U, @noescape failure : ErrorType throws -> U) rethrows -> Result<U> {
+    public func reduce<U>(success : (T) throws -> U, failure : (Error) throws -> U) rethrows -> U {
         switch self {
-        case .Success(let value): return try Result<U>.Success(success(value))
-        case .Failure(let error): return try Result<U>.Success(failure(error))
+        case .success(let value): return try success(value)
+        case .failure(let error): return try failure(error)
         }
     }
-    public func wrappedFold<U>(@noescape success success : T throws -> U, @noescape failure : ErrorType throws -> U) -> Result<U> {
+    public func wrappedReduce<U>(success : (T) throws -> U, failure : (Error) throws -> U) -> Result<U> {
         switch self {
-        case .Success(let value): return Result<U> {try success(value)}
-        case .Failure(let error): return Result<U> {try failure(error)}
+        case .success(let value): return Result<U> {try success(value)}
+        case .failure(let error): return Result<U> {try failure(error)}
         }
     }
-    public func recover(@noescape transform : ErrorType throws -> T) rethrows -> Result<T> {
+    public func recover(_ transform : (Error) throws -> T) rethrows -> T {
         switch self {
-        case .Success(_):
+        case .success(let result):
+            return result
+        case .failure(let error):
+            return try transform(error)
+        }
+    }
+    public func wrappedRecover(_ transform : (Error) throws -> T) -> Result<T> {
+        switch self {
+        case .success(_):
             return self
-        case .Failure(let error):
-            return try Result(transform(error))
-        }
-    }
-    public func wrappedRecover(@noescape transform : ErrorType throws -> T) -> Result<T> {
-        switch self {
-        case .Success(_):
-            return self
-        case .Failure(let error):
+        case .failure(let error):
             return Result {try transform(error) }
         }
     }
@@ -96,10 +96,10 @@ public enum Result<T> {
 public extension Optional {
     public init(fromResult result : Result<Wrapped>) {
         switch result {
-        case .Success(let v):
-            self = .Some(v)
-        case .Failure(_):
-            self = .None
+        case .success(let v):
+            self = .some(v)
+        case .failure(_):
+            self = .none
         }
     }
 }

@@ -7,31 +7,31 @@
 import Foundation
 
 public enum Either<LeftType,RightType> {
-    case Left(LeftType)
-    case Right(RightType)
+    case left(LeftType)
+    case right(RightType)
     
     public init(_ left : LeftType) {
-        self = .Left(left)
+        self = .left(left)
     }
     public init(_ right : RightType) {
-        self = .Right(right)
+        self = .right(right)
     }
     public var left : LeftType? {
-        if case Either.Left(let val) = self {
+        if case Either.left(let val) = self {
             return val
         }
         return nil
     }
     public var right : RightType? {
-        if case Either.Right(let val) = self {
+        if case Either.right(let val) = self {
             return val
         }
         return nil
     }
-    public func fold<T>(leftF : (LeftType) throws -> T,_ rightF : (RightType) throws -> T) rethrows -> T {
+    public func reduce<T>(left : (LeftType) throws -> T,right : (RightType) throws -> T) rethrows -> T {
         switch self {
-        case .Left(let v): return try leftF(v)
-        case .Right(let v): return try rightF(v)
+        case .left(let v): return try left(v)
+        case .right(let v): return try right(v)
         }
     }
 }
