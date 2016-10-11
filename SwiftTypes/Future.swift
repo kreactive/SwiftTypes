@@ -296,7 +296,7 @@ private class FutureFlattened<T : FutureType,S : Sequence> : Future<[T.ResultTyp
     
     let source : S
     let group = DispatchGroup()
-    private override func cancel() {
+    override func cancel() {
         super.cancel()
         self.source.forEach {
             if !$0.holdsMultipleHandlers() {$0.cancel()}
