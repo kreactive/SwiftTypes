@@ -17,7 +17,7 @@ class FutureTests: XCTestCase {
         let future = Future.async(.default) {
             Thread.sleep(forTimeInterval: 0.1)
         }
-        future.success {
+        future.success { _ in
             expectation.fulfill()
         }
         self.waitForExpectations(timeout: 0.5, handler: nil)
@@ -29,7 +29,7 @@ class FutureTests: XCTestCase {
             Thread.sleep(forTimeInterval: 0.1)
             XCTAssert(OperationQueue.current == operationQueue)
         }
-        future.success {
+        future.success { _ in
             expectation.fulfill()
         }
         self.waitForExpectations(timeout: 0.5, handler: nil)
