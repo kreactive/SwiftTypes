@@ -772,7 +772,7 @@ class FutureTests: XCTestCase {
         let startDate = Date()
         future.result { _ in
             let delay = -startDate.timeIntervalSinceNow
-            XCTAssertEqualWithAccuracy(delay, 1.0, accuracy: 0.2)
+            XCTAssertEqual(delay, 1.0, accuracy: 0.2)
             expectation.fulfill()
         }
         
@@ -784,7 +784,7 @@ class FutureTests: XCTestCase {
         let startDate = Date()
         future.result { _ in
             let delay = -startDate.timeIntervalSinceNow
-            XCTAssertEqualWithAccuracy(delay, 0.0, accuracy: 0.2)
+            XCTAssertEqual(delay, 0.0, accuracy: 0.2)
             expectation.fulfill()
         }
         future.cancel()
@@ -795,7 +795,7 @@ class FutureTests: XCTestCase {
         let startDate = Date()
         let _ = Future.async(afterDelay: 1.0) {
             let delay = -startDate.timeIntervalSinceNow
-            XCTAssertEqualWithAccuracy(delay, 1.0, accuracy: 0.2)
+            XCTAssertEqual(delay, 1.0, accuracy: 0.2)
             expectation.fulfill()
         }
         self.waitForExpectations(timeout: 2, handler: nil)
@@ -808,7 +808,7 @@ class FutureTests: XCTestCase {
         }
         f.result { _ in
             let delay = -startDate.timeIntervalSinceNow
-            XCTAssertEqualWithAccuracy(delay, 0.0, accuracy: 0.2)
+            XCTAssertEqual(delay, 0.0, accuracy: 0.2)
             expectation.fulfill()
         }
         f.cancel()
