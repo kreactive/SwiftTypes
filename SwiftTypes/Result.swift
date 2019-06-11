@@ -94,7 +94,7 @@ public enum Result<T> {
 }
 
 public extension Optional {
-    public init(fromResult result : Result<Wrapped>) {
+    init(fromResult result : Result<Wrapped>) {
         switch result {
         case .success(let v):
             self = .some(v)
