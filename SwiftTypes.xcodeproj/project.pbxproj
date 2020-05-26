@@ -49,6 +49,7 @@
 /* Begin PBXFileReference section */
 		0059A84B1C204F9400EB59BD /* SwiftTypes.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftTypes.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0059A84F1C204F9400EB59BD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		27B17A32247CFB240040FD23 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		710CE64D1C15D9D40059C0AD /* SwiftTypes.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftTypes.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		710CE6501C15D9D40059C0AD /* SwiftTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftTypes.h; sourceTree = "<group>"; };
 		710CE6521C15D9D40059C0AD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -118,6 +119,7 @@
 		710CE6431C15D9D40059C0AD = {
 			isa = PBXGroup;
 			children = (
+				27B17A32247CFB240040FD23 /* Package.swift */,
 				710CE64F1C15D9D40059C0AD /* SwiftTypes */,
 				710CE65B1C15D9D40059C0AD /* SwiftTypesTests */,
 				0059A84C1C204F9400EB59BD /* SwiftTypesWatchOS */,
