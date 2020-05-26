@@ -12,5 +12,5 @@ pmk.path = "SwiftTypes"
 pkg.swiftLanguageVersions = [5]
 pkg.targets = [
     pmk,
-    .testTarget(name: "SwiftTypesTests", dependencies: ["SwiftTypes"]),
+    .testTarget(name: "SwiftTypesTests", dependencies: ["SwiftTypes"], path: "SwiftTypesTests"),
 ]
