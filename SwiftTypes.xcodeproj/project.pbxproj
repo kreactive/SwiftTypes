@@ -320,6 +320,7 @@
 					};
 					710CE6561C15D9D40059C0AD = {
 						CreatedOnToolsVersion = 7.1.1;
+						DevelopmentTeam = 23A5AVAGZ8;
 						LastSwiftMigration = 0900;
 					};
 					719156731D1D39C900FC55C9 = {
@@ -662,6 +663,7 @@
 		710CE6651C15D9D40059C0AD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEVELOPMENT_TEAM = 23A5AVAGZ8;
 				INFOPLIST_FILE = SwiftTypesTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = kreactive.SwiftTypesTests;
@@ -673,6 +675,7 @@
 		710CE6661C15D9D40059C0AD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEVELOPMENT_TEAM = 23A5AVAGZ8;
 				INFOPLIST_FILE = SwiftTypesTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = kreactive.SwiftTypesTests;
